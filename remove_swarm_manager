@@ -1,0 +1,4 @@
+#!/bin/bash
+docker stack rm act3compnubeme
+docker service rm registry
+docker swarm leave --force
