@@ -1,3 +1,6 @@
 venv
 virtualenv
 .history
+.volumes
+.env
+__pycache__

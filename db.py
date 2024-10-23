@@ -4,7 +4,11 @@ from fastapi import Depends
 
 from sqlmodel import create_engine, SQLModel, Session
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL = "postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}".format(POSTGRES_PASSWORD= os.environ.get("POSTGRES_PASSWORD"),
+POSTGRES_USER= os.environ.get("POSTGRES_USER"),
+POSTGRES_HOST= os.environ.get("POSTGRES_HOST"),
+POSTGRES_PORT= os.environ.get("POSTGRES_PORT"),
+POSTGRES_DB= os.environ.get("POSTGRES_DB"))
 engine = create_engine(DATABASE_URL, echo=True)
 
 
