@@ -47,8 +47,8 @@ def root(session: SessionDep, req: Request, page: int = 0):
         })
     return {
         'count': len(r_list),
-        'next': str(req.base_url) + '?page=' + str(page + 1),
-        'previous': str(req.base_url) + '?page=' + str(page - 1) if page > 0 else None,
+        'next': str(req.base_url) + 'directories?page=' + str(page + 1),
+        'previous': str(req.base_url) + 'directories?page=' + str(page - 1) if page > 0 else None,
         'results': r_list
     }
 
