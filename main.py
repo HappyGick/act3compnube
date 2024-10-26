@@ -59,15 +59,15 @@ def root(session: SessionDep, req: Request, page: int = 0):
 @app.post('/directories')
 def root(session: SessionDep, directory: DirectoryModel):
     for e in directory.emails:
-        if len(re.findall(r'^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$', e)) != 1:
+        if len(re.findall('^[\\w\-\\.]+@([\\w\-]+\\.)+[\\w\-]{2,4}$', e)) != 1:
             return JSONResponse('Error: ' + e + ' is not an email.', status_code=400)
 
-    d = Directory(name=directory.name)
-    session.add(d)
-    session.commit()
-    session.refresh(d)
-    emails= list(map(lambda e: Email(email=e, directory_id=d.id), directory.emails))
     try:
+        d = Directory(name=directory.name)
+        session.add(d)
+        session.commit()
+        session.refresh(d)
+        emails= list(map(lambda e: Email(email=e, directory_id=d.id), directory.emails))
         session.add_all(emails)
         session.commit()
         session.refresh(d)
@@ -97,7 +97,7 @@ def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objet
 @app.put('/directories/{obj_id}')
 def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objeto a modificar")], directory: DirectoryModel):
     for e in directory.emails:
-        if len(re.findall(r'^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$', e)) != 1:
+        if len(re.findall('^[\\w\-\\.]+@([\\w\-]+\\.)+[\\w\-]{2,4}$', e)) != 1:
             return JSONResponse('Error: ' + e + ' is not an email.', status_code=400)
     
     q = select(Directory).where(Directory.id == obj_id)
@@ -119,13 +119,18 @@ def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objet
             'emails': list(map(lambda e: e.email, d.emails))
         }
     except exc.NoResultFound:
+        session.rollback()
         return JSONResponse('Directory with ID ' + str(obj_id) + ' not found.', status_code=404)
+    except exc.IntegrityError:
+        session.rollback()
+        return JSONResponse('Error: directory ' + directory.name + ' already exists', status_code=409)
 
 @app.patch('/directories/{obj_id}')
 def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objeto a modificar parcialmente")], directory: PartialDirectoryModel):
-    for e in directory.emails:
-        if len(re.findall(r'^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$', e)) != 1:
-            return JSONResponse('Error: ' + e + ' is not an email.', status_code=400)
+    if directory.emails != None:
+        for e in directory.emails:
+            if len(re.findall('^[\\w\-\\.]+@([\\w\-]+\\.)+[\\w\-]{2,4}$', e)) != 1:
+                return JSONResponse('Error: ' + e + ' is not an email.', status_code=400)
     
     q = select(Directory).where(Directory.id == obj_id)
     r = session.exec(q)
@@ -145,7 +150,11 @@ def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objet
             'emails': list(map(lambda e: e.email, d.emails))
         }
     except exc.NoResultFound:
+        session.rollback()
         return JSONResponse('Directory with ID ' + str(obj_id) + ' not found.', status_code=404)
+    except exc.IntegrityError:
+        session.rollback()
+        return JSONResponse('Error: directory ' + directory.name + ' already exists', status_code=409)
 
 @app.delete('/directories/{obj_id}')
 def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objeto a borrar")]):
@@ -157,4 +166,5 @@ def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objet
         session.commit()
         return 'Success'
     except exc.NoResultFound:
+        session.rollback()
         return JSONResponse('Directory with ID ' + str(obj_id) + ' not found.', status_code=404)
