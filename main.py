@@ -59,7 +59,7 @@ def root(session: SessionDep, req: Request, page: int = 0):
 @app.post('/directories')
 def root(session: SessionDep, directory: DirectoryModel):
     for e in directory.emails:
-        if len(re.findall(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$', e)) != 1:
+        if len(re.findall(r'^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$', e)) != 1:
             return JSONResponse('Error: ' + e + ' is not an email.', status_code=400)
 
     d = Directory(name=directory.name)
@@ -97,7 +97,7 @@ def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objet
 @app.put('/directories/{obj_id}')
 def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objeto a modificar")], directory: DirectoryModel):
     for e in directory.emails:
-        if len(re.findall(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$', e)) != 1:
+        if len(re.findall(r'^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$', e)) != 1:
             return JSONResponse('Error: ' + e + ' is not an email.', status_code=400)
     
     q = select(Directory).where(Directory.id == obj_id)
@@ -124,7 +124,7 @@ def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objet
 @app.patch('/directories/{obj_id}')
 def root(session: SessionDep, obj_id: Annotated[int, Path(title="El ID del objeto a modificar parcialmente")], directory: PartialDirectoryModel):
     for e in directory.emails:
-        if len(re.findall(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$', e)) != 1:
+        if len(re.findall(r'^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$', e)) != 1:
             return JSONResponse('Error: ' + e + ' is not an email.', status_code=400)
     
     q = select(Directory).where(Directory.id == obj_id)
