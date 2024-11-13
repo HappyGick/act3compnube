@@ -2,7 +2,7 @@ version: "3.1"
 services:
   web:
     restart: always
-    image: 127.0.0.1:5000/act3compnubeme
+    image: "happygick/act3compnubeme:latest"
     build: .
     ports:
       - "8000:8000"
@@ -30,6 +30,9 @@ volumes:
   pg_data:
     driver: local
     driver_opts:
+      o: bind
+      type: none
+      device: ./.pgsql
 
 networks:
   meluardo_net:
