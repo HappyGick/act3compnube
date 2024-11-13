@@ -4,6 +4,12 @@ services:
     restart: always
     image: "happygick/act3compnubeme:latest"
     build: .
+    environment:
+      POSTGRES_PASSWORD: "12345678"
+      POSTGRES_USER: "grupo8"
+      POSTGRES_DB: "dbgrupo8"
+      POSTGRES_HOST: "db"
+      APP_PORT: "8000"
     ports:
       - "8000:8000"
     networks:
@@ -18,9 +24,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: "12345678"
+      POSTGRES_USER: "grupo8"
+      POSTGRES_DB: "dbgrupo8"
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
@@ -30,9 +36,9 @@ volumes:
   pg_data:
     driver: local
     driver_opts:
-      o: bind
-      type: none
-      device: ./.pgsql
+      o: "addr=nfs01,rw"
+      type: "nfs"
+      device: ":/data/docker-vols/grupo8/pgdata"
 
 networks:
   meluardo_net:
